@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Tag;
 use Illuminate\Http\Request;
+use Session;
 
 class TagsController extends Controller
 {
@@ -13,7 +15,7 @@ class TagsController extends Controller
      */
     public function index()
     {
-        //
+        return view('admin.tags.index')->with('tags', Tag::all());
     }
 
     /**
@@ -23,7 +25,7 @@ class TagsController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.tags.create');
     }
 
     /**
@@ -34,7 +36,16 @@ class TagsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request,[
+            'name' => 'required',
+        ]);
+
+        $tag = new Tag();
+        $tag->name = $request->name;
+        $tag->save();
+
+        Session::flash('success', 'Tag created successfully!');
+        return redirect()->route('tag.index');
     }
 
     /**
@@ -56,7 +67,8 @@ class TagsController extends Controller
      */
     public function edit($id)
     {
-        //
+        $tag = Tag::findOrFail($id);
+        return view('admin.tags.edit')->with('tag', $tag);
     }
 
     /**
@@ -68,7 +80,16 @@ class TagsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $tag = Tag::findOrFail($id);
+        $this->validate($request,[
+            'name' => 'required'
+        ]);
+
+        $tag->name = $request->name;
+        $tag->save();
+
+        Session::flash('success', 'Tag updated successfully!');
+        return redirect()->route('tag.index');
     }
 
     /**
@@ -79,6 +100,15 @@ class TagsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Tag::destroy($id);
+        return redirect()->back();
     }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
 }

@@ -87,12 +87,18 @@
                                 <a href="{{ route('home') }}">Home</a>
                             </li>
                             <li class="list-group-item">
+                                <a href="{{ route('category.index') }}">Categories</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ route('tag.index') }}">Tags</a>
+                            </li>
+                            <li class="list-group-item">
                                 <a href="{{ route('post.index') }}">Posts</a>
                             </li>
                         </ul>
                     </div>
                 @endif
-                <div class="col-lg-12">
+                <div class="col-lg-8">
                     @yield('content')
                 </div>
             </div>

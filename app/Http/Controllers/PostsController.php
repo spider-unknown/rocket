@@ -2,6 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Category;
+use App\Post;
+use App\Tag;
+use Session;
+use Auth;
 use Illuminate\Http\Request;
 
 class PostsController extends Controller
@@ -13,7 +18,7 @@ class PostsController extends Controller
      */
     public function index()
     {
-        //
+        return view('admin.posts.index')->with('posts', Post::all());
     }
 
     /**
@@ -23,7 +28,12 @@ class PostsController extends Controller
      */
     public function create()
     {
-        //
+        $categories = Category::all();
+        $tags = Tag::all();
+
+        return view('admin.posts.create')
+            ->with('categories',$categories)
+            ->with('tags' , $tags);
     }
 
     /**
@@ -34,7 +44,37 @@ class PostsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $categories = Category::all();
+        $tags = Tag::all();
+        $this->validate($request, [
+            'featured' => 'required|image',
+            'content' => 'required',
+            'category_id' => 'required',
+            'tags' =>'required'
+        ]);
+
+        $featured = $request->featured;
+
+        $featured_new_name = time().$featured->getClientOriginalName();
+
+        $featured->move('uploads/posts',$featured_new_name);
+
+
+
+        $post = Post::create([
+            'content' => $request->content,
+            'featured' => '/uploads/posts/'.$featured_new_name,
+            'category_id' => $request->category_id,
+            'user_id' => Auth::id()
+        ]);
+
+        $post->tags()->attach($request->tags);
+
+        Session::flash('success',  'Post created successfully');
+
+        return redirect()->route('post.index');
+
     }
 
     /**
